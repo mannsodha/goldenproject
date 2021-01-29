@@ -1,12 +1,12 @@
 var doreamon ;
-var sanitizer,obstacle;
-var doctor;
 var ground;
-var gameState=play;
+var gameState="play";
 var rand = 0;
 var backgroundimage;
 var coronavirusimage;
 var sanitizerimage;
+var obstacleGroup,sanitizerGroup;
+
 
 function preload(){
 backgroundimage=loadImage("background.jpg");
@@ -16,29 +16,30 @@ sanitizerimage=loadImage("sanitizer.png");
 
 function setup(){
 createCanvas(windowWidth-20,windowHeight-30)
-doreamon = createSprites(100,windowHeight-100,10,10);
+doreamon = createSprite(100,windowHeight-100,10,10);
 ground = createSprite(windowWidth/2,windowHeight-70,windowWidth,10);
 ground.visibility=false;
-
+obstacleGroup=createGroup();
+sanitizerGroup=createGroup();
 }
 
 function draw(){
-background("backgroundimage");
+background(backgroundimage);
 
-if(gameState === PLAY){
+if(gameState === "play"){
    
-    ground.velocityX = -6;
+    doreamon.velocityX = 3;
     
     camera.position.x=doreamon.x;
 camera.position.y=windowHeight/2;
     
-    if (ground.x < 0){
-      ground.x = ground.width/2;
-    }
+    //if (ground.x < 0){
+      //ground.x = ground.width/2;
+    //}
     
     
 
-    if(keyDown("space") && doreamon.y >= 359){
+    if(keyDown("space") ){
       doreamon.velocityY = -10 ;
     }
   
@@ -48,43 +49,60 @@ camera.position.y=windowHeight/2;
     
     sanitizer();
   
-    obstacles();
+    obstacle();
     
-    if(ObstaclesGroup.isTouching(doreamon)){
-      gameState = END;
+    if(sanitizerGroup.isTouching(doreamon)){
+      sanitizerGroup.destroyEach();
+    
+      for(var i=0;i<5;i++){
+   if(obstacleGroup.isTouching(doreamon)){
+      obstacleGroup.destroyEach();
+   }
+  }
+  }
+
+    if(obstacleGroup.isTouching(doreamon)){
+      gameState = "end";
       
     }
   }
   
   
-  else if(gameState === END) {
+  else if(gameState === "end") {
     ground.velocityX = 0;
     doreamon.velocityY=0;
-    ObstaclesGroup.setVelocityXEach(0);
-    CloudsGroup.setVelocityXEach(0);
-    ObstaclesGroup.setLifetimeEach(-1);
-    CloudsGroup.setLifetimeEach(-1);
+    obstacleGroup.setVelocityXEach(0);
+    sanitizerGroup.setVelocityXEach(0);
+    obstacleGroup.setLifetimeEach(-1);
+    sanitizerGroup.setLifetimeEach(-1);
     
   }
+doreamon.collide(ground);
+console.log(doreamon.distance);
+
 drawSprites();
 }
 
-function obstacles(){
+function obstacle(){
     if(World.frameCount % 60 === 0) {
-     obstacle = createSprite(400,365,10,40);
-        obstacle.velocityX = -6;        
-        obstacle.scale = 0.5;
-        obstacle.lifetime = 70;
+       var Obstacle= createSprite(400,365,10,40);
+       Obstacle.addImage(coronavirusimage);
+        Obstacle.velocityX = -6;        
+        Obstacle.scale = 0.09;
+        Obstacle.lifetime = 70;
+        obstacleGroup.add(Obstacle)
     }
 }
 
 
 function sanitizer(){
-    if(World.frameCount % 60 === 0) {
-        sanitizer = createSprite(400,365,10,40);
-           sanitizer.velocityX = -6;         
-           sanitizer.scale = 0.5;
-           sanitizer.lifetime = 70;
+    if(World.frameCount % 80 === 0) {
+           var Sanitizer = createSprite(400,365,10,40);
+           Sanitizer.addImage(sanitizerimage);
+           Sanitizer.velocityX = -6;         
+           Sanitizer.scale = 0.5;
+           Sanitizer.lifetime = 70;
+           sanitizerGroup.add(Sanitizer);
        }
-
+    
 }
