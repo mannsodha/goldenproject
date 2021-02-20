@@ -5,37 +5,58 @@ var rand = 0;
 var backgroundimage;
 var coronavirusimage;
 var sanitizerimage;
+var doctorimage;
 var obstacleGroup,sanitizerGroup;
+var distance = 0;
+var doctor;
 
 
 function preload(){
 backgroundimage=loadImage("background.jpg");
 coronavirusimage=loadImage("coronavirus.png");
 sanitizerimage=loadImage("sanitizer.png");
+doctorimage=loadImage("doctor.png");
+doreamonAnimation=loadAnimation("image 1.png,image 2.png,image 3.png,image 4.png,image 5.png,image 6.png")
 }
 
 function setup(){
 createCanvas(windowWidth-20,windowHeight-30)
-doreamon = createSprite(100,windowHeight-100,10,10);
-ground = createSprite(windowWidth/2,windowHeight-70,windowWidth,10);
+doreamon = createSprite(100,height-100,10,10);
+doreamon.addAnimation("running",doramonAnimation);
+ground = createSprite(0,height-100,width*4,10);
 ground.visibility=false;
 obstacleGroup=createGroup();
 sanitizerGroup=createGroup();
+
 }
 
 function draw(){
-background(backgroundimage);
+background(0);
 
 if(gameState === "play"){
    
-    doreamon.velocityX = 3;
-    
+  if(keyIsDown(LEFT_ARROW))  
+    {
+      doreamon.x=doreamon.x+5;
+      distance++
+    }
+    if(keyIsDown(RIGHT_ARROW))  
+    {
+      doreamon.x=doreamon.x-5;
+      distance--
+    }
     camera.position.x=doreamon.x;
 camera.position.y=windowHeight/2;
     
     //if (ground.x < 0){
       //ground.x = ground.width/2;
     //}
+
+    if(distance>=1000){
+      doctor=createSprite(doreamon.x+250,doreamon.y-30);
+    doctor.addImage(doctorimage);  
+    doctor.sclae=0.5; 
+    }
     
     
 
@@ -54,11 +75,11 @@ camera.position.y=windowHeight/2;
     if(sanitizerGroup.isTouching(doreamon)){
       sanitizerGroup.destroyEach();
     
-      for(var i=0;i<5;i++){
+      
    if(obstacleGroup.isTouching(doreamon)){
       obstacleGroup.destroyEach();
    }
-  }
+  
   }
 
     if(obstacleGroup.isTouching(doreamon)){
@@ -68,7 +89,7 @@ camera.position.y=windowHeight/2;
   }
   
   
-  else if(gameState === "end") {
+ if(gameState === "end") {
     ground.velocityX = 0;
     doreamon.velocityY=0;
     obstacleGroup.setVelocityXEach(0);
@@ -78,7 +99,7 @@ camera.position.y=windowHeight/2;
     
   }
 doreamon.collide(ground);
-console.log(doreamon.distance);
+console.log(distance);
 
 drawSprites();
 }
