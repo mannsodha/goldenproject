@@ -11,6 +11,8 @@ var distance = 0;
 var doctor;
 var m=120;
 var turn =3;
+var leftbutton
+var rightbutton
 
 function preload(){
 backgroundimage=loadImage("bg1.png");
@@ -20,6 +22,7 @@ sanitizerimage=loadImage("sanitizer.png");
 doreamonAnimation=loadAnimation("images 5.png","image2.png","images 4.png")
 doreamon_standingImg=loadAnimation("images 5.png")
 restartImg=loadImage("restart.png")
+
 }
 
 function setup(){
@@ -34,8 +37,10 @@ sanitizerGroup=createGroup();
 restart=createSprite(width/2,height/2)
   restart.addImage(restartImg)
   restart.visible=false
-  
-
+  leftbutton=createButton("LEFT");
+leftbutton.position(windowWidth-100,50);
+rightbutton=createButton("RIGHT");
+rightbutton.position(windowWidth-180,50);
 }
 
 function draw(){
@@ -52,28 +57,37 @@ if(gameState === "play"){
       ground.x=doreamon.x
       doreamon.collide(ground);
       console.log(distance);
-      if(keyIsDown(LEFT_ARROW))  
-        {
-          doreamon.x=doreamon.x-5;
-          distance++
-          doreamon.changeAnimation("running",doreamonAnimation);
-        }
-        else{
-          doreamon.changeAnimation("standing",doreamon_standingImg);
-        }
-      if(keyIsDown(RIGHT_ARROW))  
+     leftbutton.mousePressed(()=>  
       {
-      doreamon.x=doreamon.x+5;
-      distance--
+          doreamon.x=doreamon.x-10;
+          distance--
+          doreamon.changeAnimation("running",doreamonAnimation);
+      })
+     
+      rightbutton.mousePressed(()=> 
+      {
+      doreamon.x=doreamon.x+10;
+      distance++
       doreamon.changeAnimation("running",doreamonAnimation);
-     }
-     else{
-      doreamon.changeAnimation("standing",doreamon_standingImg);
-     }
+     })
+     leftbutton.touchMoved(()=>  
+      {
+          doreamon.x=doreamon.x-10;
+          distance--
+          doreamon.changeAnimation("running",doreamonAnimation);
+      })
+     
+      rightbutton.touchMoved(()=> 
+      {
+      doreamon.x=doreamon.x+10;
+      distance++
+      doreamon.changeAnimation("running",doreamonAnimation);
+     })
     
-     if(keyDown("space") )
+     if(touches.length>0 || keyDown("space") )
      {
       doreamon.velocityY = -10 ;
+      touches=[]
      }
      doreamon.velocityY = doreamon.velocityY + 0.8;
     
@@ -116,7 +130,7 @@ if(gameState === "play"){
     {
       gameState="end"
       fill("black")
-      textSize(15)
+      textSize(20)
       text("GAME OVER!!!",doreamon.x-100,height-200);
       text("BETTER LUCK NEXT TIME!!!",doreamon.x-100,height-250);
     }
@@ -129,7 +143,8 @@ if(gameState === "play"){
     sanitizerGroup.setVelocityXEach(0);
     obstacleGroup.setLifetimeEach(-1);
     sanitizerGroup.setLifetimeEach(-1);
-    
+    sanitizerGroup.destroyEach();
+    obstacleGroup.destroyEach();
   }
   if(mousePressedOver(restart))
   {
